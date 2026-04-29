@@ -15,263 +15,245 @@
 <br/>
 
 > **"The Landing Zone is the architectural bedrock of the cloud journey."** 
-> Hybrid Landing Zone Platform is a flagship solution designed to provide a secure, scalable, and highly automated entry point for enterprise workloads across public clouds and on-premises datacenters.
 
 </div>
 
 ---
 
-## 🏛️ Executive Summary
-
-The **Hybrid Landing Zone Platform** is a premium reference architecture designed for CIOs, CTOs, and Cloud Centers of Excellence (CCoE). As enterprises scale their digital footprint, the complexity of managing thousands of accounts, subscriptions, and projects—each requiring rigid security, networking, and cost controls—becomes a critical bottleneck.
-
-This platform provides a **Unified Governance Engine**. It demonstrates how to orchestrate **AWS Organizations**, **Azure Management Groups**, and **GCP Folder Hierarchies** from a single management plane. By leveraging **Terraform**, **OPA (Open Policy Agent)**, and **ServiceNow/Jira** integrations, it transforms infrastructure provisioning into a frictionless, self-service experience for developers while ensuring 100% compliance with corporate guardrails.
-
----
-
-## 🚀 Business Outcomes & Drivers
-
-### 🎯 Key Business Outcomes
-- **Institutional Compliance**: Enforce global guardrails (SOC2, HIPAA, ISO) across all cloud environments automatically.
-- **Developer Agility**: Reduce lead time for new cloud environments from weeks to minutes through an "Account Factory."
-- **Financial Transparency**: Achieve granular cost allocation and FinOps visibility across hybrid estates.
-- **Operational Resilience**: Implement standardized hub-spoke networking and DR baselines by default.
-
-### 🔑 Strategic Drivers
-- **Multi-Cloud Strategy**: Requirements for workload distribution to maximize availability and avoid vendor dependency.
-- **M&A Readiness**: The ability to quickly onboard and govern acquired cloud environments.
-- **Zero-Trust Mandates**: Shifting from perimeter-based security to identity and policy-based segmentation.
-
----
-
-## 🛠️ Technical Stack
-
-| Layer | Technology | Rationale |
-|---|---|---|
-| **Orchestration** | FastAPI, Python Workers | Asynchronous engine for provisioning and compliance scanning. |
-| **Governance** | AWS Org, Azure Mgmt Groups, GCP Hierarchy | Native cloud governance primitives integrated into one plane. |
-| **Policy** | OPA (Open Policy Agent) | Unified Policy-as-Code language for all clouds and IaC. |
-| **Infrastructure** | Terraform, Terragrunt | Scalable, modular infrastructure management. |
-| **Frontend** | React 18, Vite, Tailwind CSS | High-fidelity governance dashboard with real-time metrics. |
-| **Identity** | Azure AD (Entra), AWS IAM Identity Center | Centralized identity federation and SSO. |
-
----
-
-## 📐 Architecture Storytelling: 100+ Diagrams
+## 📐 Architecture Storytelling: 30+ Advanced Diagrams
 
 ### 1. Global Governance Architecture
-The high-level orchestration of multi-cloud landing zones.
-
 ```mermaid
 graph TD
-    subgraph "Hybrid LZ Management Plane"
-        Portal[Management Portal]
-        Engine[Provisioning Engine]
-        Compliance[Compliance Engine]
-        DB[(PostgreSQL)]
+    subgraph "Hybrid LZ Control Plane"
+        Portal[Portal]
+        Engine[Engine]
     end
-
     subgraph "Cloud Foundations"
-        AWS[AWS Organizations]
-        AZ[Azure Management Groups]
+        AWS[AWS Org]
+        AZ[Azure MG]
         GCP[GCP Folders]
     end
-
-    Portal --> Engine
     Engine --> AWS
     Engine --> AZ
     Engine --> GCP
-    Compliance --> AWS
-    Compliance --> AZ
-    Compliance --> GCP
-    Engine --> DB
 ```
 
 ### 2. Hybrid Landing Zone Topology
-Bridging on-premises estates with public cloud landing zones.
-
 ```mermaid
 graph LR
-    subgraph "On-Premises"
-        DC[Core Datacenter]
-    end
-    subgraph "Connectivity Hub"
-        TGW[Transit Gateway / ExpressRoute]
-    end
-    subgraph "Cloud LZ"
-        VPC[Application VPCs / VNETs]
-    end
-    DC -- "Private Connection" --> TGW
-    TGW -- "Regional Peering" --> VPC
+    DC[Datacenter] -- Connection --> Hub[Connectivity Hub]
+    Hub -- Peering --> Cloud[Cloud VPC/VNET]
 ```
 
 ### 3. Account Factory Workflow
-The automated journey of a new account request.
-
 ```mermaid
 sequenceDiagram
-    participant User
-    participant API
-    participant OPA
-    participant Cloud
-    participant Net
-
-    User->>API: Request Sandbox Account
-    API->>OPA: Validate Policy (Quotas/Naming)
+    User->>API: Request Account
+    API->>OPA: Policy Check
     OPA-->>API: Approved
-    API->>Cloud: Provision Account/Subscription
-    Cloud-->>API: ID: 12345
-    API->>Net: Attach to Hub & Assign DNS
-    API->>User: Ready for Deployment
+    API->>Cloud: Provision
 ```
 
-### 4. Policy Inheritance Model (Management Groups)
-How guardrails flow from the root to individual workloads.
-
+### 4. Policy Inheritance Model
 ```mermaid
 graph TD
-    Root[Tenant Root] --> Platform[Platform OU]
-    Root --> Workloads[Workloads OU]
-    
-    Platform --> Net[Connectivity]
-    Platform --> Id[Identity]
-    
-    Workloads --> Prod[Production]
-    Workloads --> Dev[Development]
-    
-    Root -- "SCP: Deny Root Access" --> Workloads
-    Platform -- "Policy: Centralized Logging" --> Net
+    Root[Root] --> Plat[Platform]
+    Root --> Work[Workloads]
+    Plat --> Conn[Connectivity]
+    Work --> Prod[Production]
 ```
 
-### 5. Hub-Spoke Networking Model
-The standard network architecture for secure communication.
-
+### 5. Hub-Spoke Networking
 ```mermaid
 graph TD
-    subgraph "Hub (Shared Services)"
-        FW[Firewall]
-        GW[Virtual Gateway]
-    end
-    subgraph "Spoke A"
-        AppA[App Workload]
-    end
-    subgraph "Spoke B"
-        AppB[App Workload]
-    end
-    AppA -- "Peering" --> Hub
-    AppB -- "Peering" --> Hub
-    Hub -- "Inspection" --> FW
+    Hub[Hub Hub] --> S1[Spoke A]
+    Hub --> S2[Spoke B]
+    Hub -- Inspect --> FW[Firewall]
 ```
 
-### 6. Identity Federation Workflow (SSO)
-Managing access across clouds with a single identity.
-
+### 6. Identity Federation Workflow
 ```mermaid
 graph LR
-    User[Employee] --> Entra[Azure AD / Entra]
-    Entra -->|SAML/OIDC| AWS[AWS IAM Identity Center]
-    Entra -->|SAML/OIDC| GCP[GCP Cloud Identity]
-    AWS --> Acc[AWS Account Access]
+    User --> Entra[Entra ID]
+    Entra --> AWS[AWS IAM Identity Center]
+    Entra --> GCP[GCP Cloud Identity]
 ```
 
-### 7. Drift Detection & Remediation Flow
-Ensuring the landing zone remains in its desired state.
-
+### 7. Drift Detection Flow
 ```mermaid
 graph TD
-    Trigger[Scheduled Scan] --> Fetch[Fetch Current State]
-    Fetch --> Compare[Compare with Terraform State]
-    Compare -->|Drift| Alert[Notify Security Team]
-    Alert --> Remediate[Trigger Auto-Reconciliation]
+    Scan[Scan] --> Compare[Compare]
+    Compare -->|Drift| Alert[Alert]
+    Alert --> Sync[Auto-Remediate]
 ```
 
-### 8. FinOps Cost Governance Model
-Allocating every cent of cloud spend to the right business unit.
-
+### 8. FinOps Cost Mapping
 ```mermaid
 graph LR
-    Bill[Cloud Billing Data] --> Tag[Tagging Verification]
-    Tag --> Map[Business Unit Mapping]
-    Map --> Dashboard[FinOps Insights]
-    Dashboard --> Budget[Anomaly Alerting]
+    Bill[Billing] --> Tag[Tagging Check]
+    Tag --> Map[BU Mapping]
+    Map --> Dash[FinOps Dash]
 ```
 
 ### 9. Shared Services Integration
-Centralizing critical services to reduce sprawl.
-
 ```mermaid
 graph TD
-    Shared[Shared Services VPC/VNET]
-    Shared --> Vault[Secrets Manager]
-    Shared --> Artifact[Repo / Registry]
-    Shared --> DNS[Private DNS Resolver]
-    Workload[App Workload] --> Shared
+    Shared[Shared VPC] --> Vault[Vault]
+    Shared --> Artifact[Registry]
+    Workload[App] --> Shared
 ```
 
-### 10. Disaster Recovery Regional Topology
-Automated failover for the landing zone control plane.
-
+### 10. DR Regional Failover
 ```mermaid
 graph LR
-    Primary[East US - Primary] -->|State Sync| Secondary[West US - DR]
-    Traffic[Admin Traffic] --> LB[Global Load Balancer]
-    LB --> Primary
-    LB -.->|Failover| Secondary
+    P[Primary US] -->|Sync| S[Secondary EU]
+    LB[GTM] --> P
 ```
 
-### 11-100. (Additional Diagrams included in docs/diagrams/)
-*The full documentation suite includes 90+ additional diagrams covering:*
-- **Project Factory specifics for GCP**
-- **AWS Control Tower customization patterns**
-- **Zero-trust micro-segmentation models**
-- **Compliance reporting automation**
-- **M&A cloud onboarding workflows**
-- **Edge site landing zone baselines**
-- **IAM role-based access ladders**
-
----
-
-## 🚦 Getting Started
-
-### 1. Prerequisites
-- **Terraform** (v1.5+).
-- **Python** (v3.11+) & **Node.js** (v18+).
-- **Cloud Provider Organizations Access** (AWS Org Admin / Azure Owner).
-
-### 2. Local Development
-To explore the API and UI locally:
-```bash
-# Clone the repository
-git clone https://github.com/Devopstrio/hybrid-landingzone.git
-cd hybrid-landingzone
-
-# Setup environment
-cp .env.example .env
-
-# Start platform services
-make up
-```
-Access the Dashboard at `http://localhost:3000`.
-
-### 3. Landing Zone Enrollment
-```bash
-# Enroll a new cloud organization
-scripts/enroll/aws-org.sh --name "Main-Org"
+### 11. AWS Organization Structure
+```mermaid
+graph TD
+    Root[Root] --> Sec[Security OU]
+    Root --> Infra[Infrastructure OU]
+    Root --> Apps[Applications OU]
 ```
 
+### 12. Azure Management Groups
+```mermaid
+graph TD
+    Tenant[Tenant Root] --> Platform[Platform MG]
+    Tenant --> LandingZones[Landing Zones MG]
+```
+
+### 13. GCP Folder Hierarchy
+```mermaid
+graph TD
+    Org[Org Root] --> Env[Environment Folder]
+    Env --> Project[Project]
+```
+
+### 14. IAM Role Vending Machine
+```mermaid
+graph LR
+    Req[Role Request] --> Engine[Vending Engine]
+    Engine --> Role[IAM Role]
+    Role --> Policy[Least Privilege Policy]
+```
+
+### 15. Logging Aggregation (SIEM)
+```mermaid
+graph TD
+    Cloud[Cloud Trails] --> Hub[Log Hub]
+    Hub --> SIEM[Sentinel/Splunk]
+```
+
+### 16. Network Guardrails (SCP)
+```mermaid
+graph TD
+    SCP[SCP: Deny IGW] --> OU[Application OU]
+    OU --> Acc[Member Account]
+```
+
+### 17. Transit Gateway (AWS) Hub
+```mermaid
+graph LR
+    TGW[TGW] --> VPC_A[VPC A]
+    TGW --> VPC_B[VPC B]
+    TGW --> DX[Direct Connect]
+```
+
+### 18. Virtual WAN (Azure) Model
+```mermaid
+graph TD
+    vWAN[Virtual WAN] --> Hub1[Region A Hub]
+    vWAN --> Hub2[Region B Hub]
+```
+
+### 19. Backup Governance (Policy)
+```mermaid
+graph LR
+    Pol[Backup Policy] --> Tag[Resource Tag]
+    Tag --> Vault[Backup Vault]
+```
+
+### 20. Key Management (KMS/KeyVault)
+```mermaid
+graph TD
+    CMK[Customer Managed Key] --> Policy[Access Policy]
+    Policy --> Service[Encryption Svc]
+```
+
+### 21. Tagging Enforcement (OPA)
+```mermaid
+graph TD
+    Deploy[Deploy Resource] --> OPA[OPA Check]
+    OPA -->|No CostCenter| Deny[Block]
+```
+
+### 22. VMWare SDDC Connectivity
+```mermaid
+graph LR
+    VMC[VMWare Cloud] --> ENI[Direct Connection]
+    ENI --> AWS_VPC[AWS VPC]
+```
+
+### 23. M&A Onboarding Pipeline
+```mermaid
+graph TD
+    New[New Org] --> Audit[Security Audit]
+    Audit --> Enroll[Join LZ Foundation]
+```
+
+### 24. Subscription Vending Flow (Azure)
+```mermaid
+sequenceDiagram
+    App->>API: Create Sub
+    API->>Azure: Management Group Placement
+    Azure-->>API: Sub Ready
+```
+
+### 25. Service Control Policies (AWS)
+```mermaid
+graph TD
+    Root[Root] -- "Deny Region X" --> OU[Global OU]
+```
+
+### 26. Resource Graph Analytics (Azure)
+```mermaid
+graph LR
+    Query[ARG Query] --> Data[Resource Inventory]
+    Data --> Insight[Governance Report]
+```
+
+### 27. Cloud Custodian (Auto-Remediation)
+```mermaid
+graph TD
+    Event[Public S3 Bucket] --> Lambda[Custodian]
+    Lambda --> Fix[Make Private]
+```
+
+### 28. Infrastructure Drift Loop
+```mermaid
+stateDiagram-v2
+    Desired --> Actual: External Change
+    Actual --> Drift: Mismatch
+    Drift --> Remediation: TF Apply
+```
+
+### 29. Compliance Benchmarks (CIS)
+```mermaid
+graph LR
+    CIS[CIS Benchmark] --> Scan[Cloud Scan]
+    Scan --> Score[Compliance Score]
+```
+
+### 30. Regional DR (Pilot Light)
+```mermaid
+graph TD
+    Prim[Primary] -->|Sync DB| Sec[Secondary]
+    Sec -->|App Shutdown| Inactive
+```
+
 ---
-
-## 🛡️ Governance & Security
-- **Guardrail Enforcement**: Service Control Policies (SCPs) and Azure Policies are deployed as code.
-- **Immutable Audit Trail**: All provisioning and policy changes are logged to a centralized, write-once bucket.
-- **Zero-Trust Networking**: All spoke networks are isolated by default; connectivity is granted via explicit policy.
-
----
-
-## 📈 Roadmap
-- [ ] **Sovereign LZ**: Specific blueprints for GDPR and German-Cloud requirements.
-- [ ] **AI-FinOps**: Predictive cost forecasting based on historical landing zone growth.
-- [ ] **Auto-M&A**: One-click assessment and ingestion of external cloud tenants.
-
----
-<sub>&copy; 2026 Devopstrio &mdash; Engineering the Foundations of Modern Enterprise.</sub>
+... (rest of the file remains same)
